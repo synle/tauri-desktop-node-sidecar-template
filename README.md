@@ -27,7 +27,7 @@ Platform-specific extras:
 
 ```bash
 git clone <this-repo>
-cd tauri_desktop_node_sidecar_template
+cd tauri-desktop-node-sidecar-template
 npm install            # install JS dependencies
 npx tauri dev          # run the desktop app + sidecar in dev mode
 ```

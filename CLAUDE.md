@@ -8,8 +8,8 @@ A **skeleton template** for cross-platform desktop apps built with **Tauri v2** 
 
 Sister templates (in adjacent directories):
 
-- `tauri_desktop_raw_template` — plain Tauri (no sidecar)
-- `tauri_desktop_shell_sidecar_template` — Tauri + shell binary sidecar
+- `tauri-desktop-raw-template` — plain Tauri (no sidecar)
+- `tauri-desktop-shell-sidecar-template` — Tauri + shell binary sidecar
 
 ## Build commands
 
