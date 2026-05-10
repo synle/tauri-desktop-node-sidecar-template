@@ -90,6 +90,101 @@ jobs:
           compression-level: 9
           if-no-files-found: ignore
 
+  coverage:
+    # Coverage runs on a single OS (Linux is cheapest) — the Rust test
+    # suite is platform-agnostic for the covered code. Thresholds are
+    # pinned to the current baseline (floored to integers). Real
+    # regressions below the floor fail the build; raise these as
+    # coverage improves.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libxdo-dev \
+            libssl-dev
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      # `tauri.conf.json` references `resources/*`; the sidecar build
+      # populates this directory but we're not running it here, so
+      # create it empty to satisfy tauri-build during `cargo llvm-cov`.
+      - name: Ensure resources directory exists
+        run: mkdir -p src-tauri/resources
+
+      - name: Rust coverage (cargo-llvm-cov)
+        id: rust_cov
+        working-directory: src-tauri
+        # Floors mirror the current baseline (Regions 10.77%,
+        # Functions 25.00%, Lines 13.33%) floored to integers.
+        # Raise these as coverage improves; never lower below baseline.
+        run: |
+          set -o pipefail
+          cargo llvm-cov --lib --summary-only \
+            --fail-under-lines 13 \
+            --fail-under-functions 25 \
+            --fail-under-regions 10 \
+            2>&1 | tee /tmp/rust-cov.txt
+
+      # Also emit HTML + lcov reports for the artifact upload below.
+      # `--no-run` reuses the instrumented build from the previous step
+      # so we don't rebuild — much faster than two full runs.
+      - name: Generate HTML + lcov reports
+        if: always()
+        working-directory: src-tauri
+        run: |
+          cargo llvm-cov report --html || true
+          cargo llvm-cov report --lcov --output-path target/llvm-cov-target/lcov.info || true
+
+      # Upload the full HTML / lcov reports as an artifact so reviewers
+      # can drill into per-file line-level coverage when the run-page
+      # summary's totals aren't enough.
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-coverage-reports
+          path: |
+            src-tauri/target/llvm-cov-target/html/
+            src-tauri/target/llvm-cov-target/lcov.info
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # Surface the report on the workflow's run page. `if: always()`
+      # ensures the summary still posts when the threshold check fails
+      # — that's exactly when a human wants to see the numbers.
+      - name: Post coverage to step summary
+        if: always()
+        run: |
+          {
+            echo "## Rust test coverage — \`$GITHUB_SHA\`"
+            echo
+            echo '```text'
+            if [ -f /tmp/rust-cov.txt ]; then
+              awk '/^Filename/,/^TOTAL/' /tmp/rust-cov.txt \
+                || tail -n 30 /tmp/rust-cov.txt
+            else
+              echo "(rust coverage did not run)"
+            fi
+            echo '```'
+            echo
+            echo "Thresholds (from \`build.yml\` cargo-llvm-cov flags):"
+            echo "lines ≥ 13, functions ≥ 25, regions ≥ 10."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   pr_comment:
     if: github.event_name == 'pull_request'
     needs: [build]
