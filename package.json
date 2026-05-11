@@ -1,6 +1,6 @@
 {
   "name": "tauri-desktop-node-sidecar-template",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Skeleton Tauri v2 + Node.js/Express sidecar desktop app template (React 19 + MUI v9 + TypeScript).",
   "private": true,
   "scripts": {
