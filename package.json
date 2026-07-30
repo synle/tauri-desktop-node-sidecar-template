@@ -1,8 +1,8 @@
 {
   "name": "tauri-desktop-node-sidecar-template",
   "version": "0.1.3",
-  "description": "Skeleton Tauri v2 + Node.js/Express sidecar desktop app template (React 19 + MUI v9 + TypeScript).",
   "private": true,
+  "description": "Skeleton Tauri v2 + Node.js/Express sidecar desktop app template (React 19 + MUI v9 + TypeScript).",
   "scripts": {
     "dev": "concurrently -n web,sidecar \"npm:dev:web\" \"npm:dev:sidecar\"",
     "dev:web": "vite --config vite.frontend.config.ts",
@@ -14,10 +14,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write .",
+    "format": "oxfmt --write .",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "format:check": "oxfmt --check ."
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -46,7 +47,7 @@
     "express": "^4.21.2",
     "jsdom": "^29.0.2",
     "nodemon": "^3.1.14",
-    "prettier": "^3.8.2",
+    "oxfmt": "^0.61.0",
     "typescript": "~5.8",
     "vite": "^6.4.2",
     "vitest": "^4.1.5"

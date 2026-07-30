@@ -8,12 +8,12 @@ Two starter pages — **Home** (calls `GET /api/greet`) and **Settings** — wir
 
 ## Requirements
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| Node.js | 20+ | Use `fnm` / `nvm` to pin |
-| npm | 10+ | Ships with Node |
-| Rust | stable | `rustup default stable` |
-| Tauri prereqs | — | See [tauri.app prerequisites](https://tauri.app/start/prerequisites/) |
+| Tool          | Version | Notes                                                                 |
+| ------------- | ------- | --------------------------------------------------------------------- |
+| Node.js       | 20+     | Use `fnm` / `nvm` to pin                                              |
+| npm           | 10+     | Ships with Node                                                       |
+| Rust          | stable  | `rustup default stable`                                               |
+| Tauri prereqs | —       | See [tauri.app prerequisites](https://tauri.app/start/prerequisites/) |
 
 Platform-specific extras:
 
